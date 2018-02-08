@@ -2,9 +2,7 @@
 
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
-
-
-static float TotalRotation = 0.0f;
+#include "Engine/World.h"
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -23,7 +21,7 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	TotalRotation = 0.0f;
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -33,12 +31,32 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	UE_LOG(LogTemp, Warning, TEXT("Rotation: %f"), TotalRotation);
-	if (TotalRotation < 60) {
-		FRotator NewRotation = FRotator(0.0f, TotalRotation++, 0.0f);
+
+	// Poll trigger volume every frame
+	// if actor that opens is in the volume, open door
+	if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+		OpenDoor();
+	} else {
+		CloseDoor();
+	}
+}
+
+void UOpenDoor::OpenDoor() {
+	if (OpenAngle < 60) {
+		FRotator NewRotation = FRotator(0.0f, OpenAngle++, 0.0f);
 
 		AActor * Owner = GetOwner();
 		Owner->SetActorRotation(NewRotation);
 	}
 }
+
+void UOpenDoor::CloseDoor() {
+	if (OpenAngle > 0) {
+		FRotator NewRotation = FRotator(0.0f, OpenAngle--, 0.0f);
+
+		AActor * Owner = GetOwner();
+		Owner->SetActorRotation(NewRotation);
+	}
+}
+
 
