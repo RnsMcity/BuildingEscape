@@ -38,6 +38,9 @@ private:
 	// Release grab
 	void ReleaseGrab();
 
+	// Check if object is still grabbed (reach range)
+	bool CheckGrab();
+
 	// Find Physics Handle Component
 	void FindPhysicsHandleComponent();
 
@@ -46,4 +49,8 @@ private:
 
 	// Get hit for first physics object in reach
 	const FHitResult GetFirstPhysicsBodyInReach();
+
+	// Get end of line trace
+	FVector GetReachLineStart();
+	FVector GetReachLineEnd();
 };
