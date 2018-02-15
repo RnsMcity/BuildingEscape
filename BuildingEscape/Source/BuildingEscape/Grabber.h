@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Grabber.generated.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/InputComponent.h"
 
+#include "Grabber.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UGrabber : public UActorComponent
@@ -25,5 +27,23 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float Reach = 100.0f;
+	float Reach = 100.0f;	// how far we can reach for an object
+
+	UPhysicsHandleComponent * PhysicsHandle = nullptr;
+	UInputComponent * InputComponent = nullptr;
+
+	// Ray-cast and grab what is in reach
+	void AttemptGrab();
+
+	// Release grab
+	void ReleaseGrab();
+
+	// Find Physics Handle Component
+	void FindPhysicsHandleComponent();
+
+	// Set up attached input component
+	void SetupInputComponent();
+
+	// Get hit for first physics object in reach
+	const FHitResult GetFirstPhysicsBodyInReach();
 };
