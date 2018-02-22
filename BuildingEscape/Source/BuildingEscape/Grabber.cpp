@@ -41,17 +41,40 @@ void UGrabber::AttemptGrab() {
 	auto ComponentToGrab = HitResult.GetComponent();
 	auto ActorHit = HitResult.GetActor();
 
+	if (PhysicsHandle == nullptr) {
+		return;
+	}
+
 	// If we hit something then attach a physics handle
-	// TODO attach physics handle
 	if (ActorHit) {
-		/*FVector ComponentActorLocation = ComponentToGrab->GetOwner()->GetActorLocation();*/
-		
+		FVector ComponentActorLocation = ComponentToGrab->GetOwner()->GetActorLocation();		
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
 			NAME_None,
 			HitResult.Location,
 			true
 		);
+
+		/*DrawDebugCircle(
+			GetWorld(),
+			HitResult.Location,
+			50.0f,
+			50,
+			FColor(255, 0, 0),
+			true,
+			0.0f,
+			0
+		);*/
+
+			/*DrawDebugLine(
+			GetWorld(),
+			PlayerViewPointLocation,
+			LineTraceEnd,
+			FColor(255, 0, 0),
+			false,
+			0.0f,
+			0,*/
+
 	}
 }
 
@@ -86,16 +109,21 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-
+	// if physics handle is null
+	if (PhysicsHandle == nullptr) {
+		return;
+	}
 	// if physics handle is attached
 	if (PhysicsHandle->GrabbedComponent) {
 		// check if the object is still in the reach range
 		//if (CheckGrab()) {
 			// then move the object we're holding
 			// Get the beginning of the line
+
 		FVector PlayerViewPointLocation = GetReachLineStart();
 		// Calculate the end of the line
 		FVector LineTraceEnd = GetReachLineEnd();
+
 		// Set the target to the end
 		PhysicsHandle->SetTargetLocation(LineTraceEnd);
 	}
@@ -141,9 +169,7 @@ FVector UGrabber::GetReachLineEnd() {
 // Look for attached PhysicsHandle
 void UGrabber::FindPhysicsHandleComponent() {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle) {
-
-	} else {
+	if (PhysicsHandle == nullptr) {
 		UE_LOG(LogTemp, Error, TEXT("%s is missing PhysicsHandle!"), *GetOwner()->GetName());
 	}
 }
