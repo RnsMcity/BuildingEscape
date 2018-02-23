@@ -32,23 +32,11 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-
-	// Poll trigger volume every frame
-	// if actor that opens is in the volume, open door
-
-	// if mass of actors on the plate is > X, then open door
-	if (GetTotalMassOfActorsOnPlate() > 30) {
-		OpenDoor();
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+	if (GetTotalMassOfActorsOnPlate() > TriggerMass) {
+		OnOpen.Broadcast();
 	} else {
-		CloseDoor();
+		OnClose.Broadcast();
 	}
-
-	/* Below is how the tutorial handled things; my implementation is preferred
-	if (GetWorld()->GetTimeSeconds - LastDoorOpenTime > DoorCloseDelay) {
-		CloseDoor();
-	}
-	*/
 }
 
 float UOpenDoor::GetTotalMassOfActorsOnPlate() {
@@ -67,23 +55,6 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate() {
 	}
 
 	return TotalMass;
-}
-
-void UOpenDoor::OpenDoor() {
-	/*if (OpenAngle < 60) {
-		FRotator NewRotation = FRotator(0.0f, OpenAngle++, 0.0f);
-
-		Owner->SetActorRotation(NewRotation);
-	}*/
-	OnOpenRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor() {
-	/*if (OpenAngle > 0) {
-		FRotator NewRotation = FRotator(0.0f, OpenAngle--, 0.0f);
-
-		Owner->SetActorRotation(NewRotation);
-	}*/
 }
 
 
